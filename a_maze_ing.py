@@ -3,12 +3,13 @@ import os
 from parser import get_maze_config
 from mazegen import MazeGenerator
 
+
 def main() -> None:
     if len(sys.argv) != 2:
         print("Error: You must give an config file.")
         print("Use: python3 a_maze_ing.py config.txt")
         sys.exit(1)
-    
+
     config_path = sys.argv[1]
 
     if not os.path.exists(config_path):
@@ -39,10 +40,9 @@ def save_maze_to_file(filename, grid):
                 line = "".join(f"{cell:X}" for cell in row)
                 maze_file.write(line + "\n")
         print(f"Success: Maze saved to {filename}")
-    
+
     except IOError as error:
         print(f"Fatal Error: Could not write to file {filename}: {error}")
-
 
 
 if __name__ == "__main__":
