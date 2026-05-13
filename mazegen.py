@@ -2,7 +2,7 @@ import random
 
 
 class MazeGenerator:
-    def __init__(self, config: dict):
+    def __init__(self, config: dict) -> None:
         self.width = config['WIDTH']
         self.height = config['HEIGHT']
         self.start_node = config['ENTRY']
@@ -19,8 +19,8 @@ class MazeGenerator:
                         for _ in range(self.height)]
 
     def get_unvisited_neighbors(self, x: int, y: int) -> list:
-        neighbors = []
-        directions = [
+        neighbors: list[tuple[int, int, int, int]] = []
+        directions: list[tuple[int, int, int, int]] = [
             (0, -1, 1, 4),
             (1, 0, 2, 8),
             (0, 1, 4, 1),
@@ -47,9 +47,38 @@ class MazeGenerator:
                         self.grid[y][x] -= 2
                         self.grid[y][x + 1] -= 8
 
-    def generate(self) -> list:
+    def get_42_pattern(self) -> list[tuple[int, int]]:
+        mid_x = self.width // 2
+        mid_y = self.height // 2
+
+        offsets = [
+            (mid_x - 3, mid_y - 1), (mid_x - 3, mid_y), (mid_x - 3, mid_y + 1),
+            (mid_x - 2, mid_y + 1), (mid_x - 1, mid_y - 1), (mid_x - 1, mid_y),
+            (mid_x - 1, mid_y + 1), (mid_x - 1, mid_y + 2),
+            (mid_x - 1, mid_y + 3), (mid_x + 1, mid_y - 1),
+            (mid_x + 2, mid_y - 1), (mid_x + 3, mid_y - 1),
+            (mid_x + 3, mid_y), (mid_x + 3, mid_y + 1),
+            (mid_x + 2, mid_y + 1), (mid_x + 1, mid_y + 1),
+            (mid_x + 1, mid_y + 2), (mid_x + 1, mid_y + 3),
+            (mid_x + 2, mid_y + 3), (mid_x + 3, mid_y + 3)
+        ]
+        return offsets
+
+    def apply_42_pattern(self) -> None:
+        coordinates_42 = self.get_42_pattern()
+        for x, y in coordinates_42:
+            if 0 <= x < self.width and 0 <= y < self.height:
+                self.grid[y][x] = 15
+                self.visited[y][x] = True
+
+    def generate(self) -> list[list[int]]:
+        if self.width < 10 or self.height < 10:
+            print("Error: Maze size is to small to display the '42' pattern.")
+        else:
+            self.apply_42_pattern()
+
         start_x, start_y = self.start_node
-        stack = [(start_x, start_y)]
+        stack: list[tuple[int, int]] = [(start_x, start_y)]
         self.visited[start_y][start_x] = True
 
         while stack:
