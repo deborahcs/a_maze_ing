@@ -23,8 +23,8 @@ def read_config_file(file_path: str) -> str:
             return content
     except FileNotFoundError:
         raise FileNotFoundError(f"Config file not found: '{file_path}'.")
-    except Exception as e:
-        raise Exception(f"Error reading file: {e}")
+    except Exception as error:
+        raise Exception(f"Error reading file: {error}")
 
 
 def create_raw_dict(content: str) -> dict[str, str]:
@@ -65,8 +65,6 @@ def validate_config(raw_map: dict[str, str]) -> dict[str, Any]:
 
     config['PERFECT'] = raw_map['PERFECT'].lower() == 'true'
     config['OUTPUT_FILE'] = raw_map['OUTPUT_FILE']
-
-    # Suporte a SEED para reprodutibilidade [cite: 130]
     config['SEED'] = int(raw_map.get('SEED', 0))
 
     if config['WIDTH'] < 10 or config['HEIGHT'] < 10:
@@ -79,3 +77,19 @@ def get_maze_config(file_path: str) -> dict[str, Any]:
     content = read_config_file(file_path)
     raw_map = create_raw_dict(content)
     return validate_config(raw_map)
+
+def load_maze(filename: str) -> list[list[int]]:
+    grid = []
+    try:
+        with open(filename, 'r') as maze_file:
+            for line in maze_file:
+                line = line.strip()
+                if not line:
+                    break
+                row = [int(char, 16) for char in line]
+                grid.append(row)
+        return grid
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Maze file not found: {filename}")
+    except ValueError as error:
+        raise ValueError(f"Error trying to convert hexadecimal char: {error}") 
