@@ -1,0 +1,23 @@
+[project]
+name = "mazegen"
+version = "1.0.0"
+description = "Reusable maze generator for the A-Maze-ing project."
+authors = [
+    { name = "Deborah" },
+    { name = "Lucas" }
+]
+readme = "README.md"
+requires-python = ">=3.10,<4.0"
+dependencies = []
+
+[tool.poetry]
+packages = [{ include = "mazegen.py" }]
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^9.0.3"
+flake8 = "^7.3.0"
+mypy = "^1.20.1"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

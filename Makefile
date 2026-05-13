@@ -5,10 +5,13 @@ RESET = \033[0m
 VENV = .venv
 PY = $(VENV)/bin/python3
 PIP = $(VENV)/bin/pip
+POETRY = $(PY) -m poetry
 
 MAIN = a_maze_ing.py
+CONFIG = config.txt
+ARGS ?= $(CONFIG)
 
-all: install
+all: run
 
 $(VENV):
 	@echo "$(GREEN)[LOG] Criando ambiente virtual... $(RESET)"
@@ -21,15 +24,17 @@ install: $(VENV)
 
 run: install
 	@echo "$(GREEN)[LOG] Executando o gerador de labirintos... $(RESET)"
+	@echo "$(YELLOW)[INFO] Arquivo utilizado: $(ARGS)$(RESET)"
 	@$(PY) $(MAIN) $(ARGS)
-	@if [ ! -z "$(ARGS)" ]; then \
-		echo "$(YELLOW)[INFO] Argumentos passados: $(ARGS)$(RESET)"; \
-	else \
-		echo "$(YELLOW)[INFO] Nenhum argumento passado.$(RESET)"; \
-	fi
+
+build: install
+	@echo "$(GREEN)[LOG] Gerando pacote (.whl) com Poetry...$(RESET)"
+	@$(POETRY) build
+	@cp dist/mazegen-*.whl .
+	@echo "$(YELLOW)[INFO] Pacote copiado para a raiz.$(RESET)"
 
 debug: install
-	@echo "$(GREEN)[LOG] Iniciando depurador... $(RESET)"
+	@echo "$(GREEN)[LOG] Iniciando depurador com $(ARGS)... $(RESET)"
 	@$(PY) -m pdb $(MAIN) $(ARGS)
 
 lint: install
@@ -43,9 +48,9 @@ lint-strict: install
 	@echo "$(GREEN)[LOG] Rodando MyPy em modo STRICT...$(RESET)"
 	@$(PY) -m mypy --strict .
 
-reqs:
+reqs: install
 	@echo "$(YELLOW)[INFO] Exportando dependências para requirements.txt...$(RESET)"
-	@$(PY) -m poetry export -f requirements.txt --output requirements.txt --without-hashes
+	@$(POETRY) export -f requirements.txt --output requirements.txt --without-hashes
 
 clean:
 	@echo "$(GREEN)[LOG] Removendo caches temporários...$(RESET)"
